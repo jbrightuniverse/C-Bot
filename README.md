@@ -1,5 +1,4 @@
 # C++Bot
-## C++ Bot for Discord
 
 This is a bot that runs C++ for use in Discord servers. That's basically it.
 Most instructions are available when you activate the bot and call `++code`

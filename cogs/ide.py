@@ -45,13 +45,14 @@ class Ide(bot.Cog):
   @bot.command()
   async def code(self, ctx):
     """Allows you to program C++ inside Discord. Type `++code` to start, and then follow on-screen instructions."""
-    print(ctx.author)
     if ctx.channel.id in self.channels:
       return await ctx.send(f"Sorry {ctx.author}, this channel is already in use. Please use another one. Thanks!")
     try:
       self.channels.append(ctx.channel.id)
-      await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands:", fields = [["run", "runs your code and then wipes the file you currently have"], ["view (coming soon)", "views the code you have so far"], ["//", "allows you to send text without triggering the bot (send it in the same line)"],["exit", "exits the program"]], footer = "ALPHA RELEASE. Coming soon:\n· support for multiple files\n· undo command\n· view existing code command\n· support for stdin\n\n©2020 James Yu. https://github.com/jbrightuniverse/C-Bot\nPart of the YuBot family of bots.")
+      await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands (do **NOT** prefix with ++):", fields = [["run", "runs your code and then wipes the file you currently have (temporary behaviour)"], ["view", "views the code you have so far in plaintext"], ["view num", "views the code you have so far, with line numbers"], ["edit 1", "moves the writing pointer to a specified line\nreplace 1 with the line number you wish to edit from"], ["overedit 1", "moves the writing pointer to a specified line, ignoring existing text until you call `edit` again\nreplace 1 with the start line number you wish to edit from"], ["//", "allows you to send text without triggering the bot (send it in the same line)"],["exit", "exits the program"]], footer = "ALPHA RELEASE\n\n©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.\nhttps://github.com/jbrightuniverse/C-Bot\nPart of the YuBot family of bots.")
       curfunc = []
+      overwrite = False
+      pointer = 0
       while True:
         val = await get22(ctx, self.bot)
         if val.lower() == "exit":
@@ -101,6 +102,21 @@ class Ide(bot.Cog):
           else:
             upperphr = "```cpp\n"+"\n".join(curfunc)
             await ctx.send(upperphr[:1996]+"\n```")
+        elif val == "view num":
+          if not curfunc: await ctx.send("```No code yet!```")
+          else:
+            code = "\n".join(curfunc)
+            code = code.split("\n")
+            code = [str(c[1]) + ". " + c[0]for c in zip(code, range(1, len(code)+1))]
+            upperphr = "```cpp\n"+"\n".join(code)
+            await ctx.send(upperphr[:1996]+"\n```")
+        elif val.startswith("edit "):
+          line = val.split()[1]
+          alllines = ("\n".join(curfunc)).split("\n")
+          if not line.isdigit() or int(line)-1 not in range(len(alllines)):
+            await ctx.send("ERROR: Invalid line number.")
+            continue
+          await ctx.send("Enter the text you wish to insert instead/")
         else:
           curfunc.append(val)
           await ctx.send("ok")

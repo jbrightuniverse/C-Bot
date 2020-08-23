@@ -39,7 +39,7 @@ Paste the link into your browser to add the bot to servers you own.
 
 That's it!
 
-## FUNCTIONALITY UPDATE LOG
+# FUNCTIONALITY UPDATE LOG
 2020-08-23\
 · Modified compiler to time out after 10 seconds (experimental)\
 · Added `stop` command to halt a program that is already running\
@@ -62,7 +62,7 @@ That's it!
 · Support for multiple files and filetypes\
 · Support for external library inclusion based on string input\
 · Revised program timeout engine\
-· Restrictions on system usage\
+· Restrictions on system usage
 
 ## FAR FUTURE UPDATES
 · Support for zip file library additions\

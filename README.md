@@ -47,6 +47,12 @@ That's it!
 · Added `view` command for viewing existing code\
 · Added `view num` command for viewing existing code with line numbers
 
+2020-08-22: initial release\
+· `++code` to start the ide\
+· type code into the chat to load to file\
+· `run` to run code\
+· `exit` to exit the ide
+
 ## FUTURE UPDATES (in no particular order)
 
 · Support for input args\

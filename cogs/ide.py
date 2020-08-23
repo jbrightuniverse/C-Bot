@@ -90,6 +90,7 @@ class Ide(bot.Cog):
               try: os.remove(name)
               except: pass
               os.remove(f"{name}.cpp") 
+              signal.alarm(0)
               continue
           except Exception as e:
             await ctx.send(f"ERROR: {e}\nResetting.")
@@ -106,7 +107,7 @@ class Ide(bot.Cog):
           t.daemon = True
           t.start()
           operator = time.time()
-          phr = f"{message.author.id}{message.channel.id}"
+          phr = f"{ctx.author.id}{ctx.channel.id}"
           var.msgqueue[phr] = []
           while True:
             try:
@@ -120,7 +121,12 @@ class Ide(bot.Cog):
               await asyncio.sleep(0)
             if time.time() - operator > 5:
               await ctx.send("Exceeded alotted unresponsive wait time of 5 seconds. Resetting.")
-              break   
+              break 
+            if len(var.msgqueue[phr]):
+              nput = var.msgqueue[phr].pop(0)
+              if nput == "stop":
+                await ctx.send("Halting and resetting.")  
+                break
           del var.msgqueue[phr]
           os.remove(name)
           os.remove(f"{name}.cpp") 
@@ -167,8 +173,10 @@ class Ide(bot.Cog):
         
     except Exception as e:
       self.channels.remove(ctx.channel.id)
-      phrase = "".join(["\\"+x for x in list(str(e))])
-      await ctx.send(f"ERROR: ```{phrase}```\nExiting the command.")
+      phr = f"{ctx.author.id}{ctx.channel.id}"
+      if phr in var.msgqueue:
+        del var.msgqueue[phr]
+      await ctx.send(f"ERROR: ```{e}```\nExiting the command.")
 
 def setup(bot):
   bot.add_cog(Ide(bot))

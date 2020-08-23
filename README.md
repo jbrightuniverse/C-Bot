@@ -44,11 +44,11 @@ That's it!
 · Added `view` command for viewing existing code
 
 ## FUTURE UPDATES (in no particular order)
-· Selective line editing (enter a line number to edit the line)
-· Support for marked-down code input
-· Support for file-based code input
-· Halt program execution command
-· Support for multiple files and filetypes
-· Support for standard input ("std::cin") during program execution
-· More things that I haven't thought of yet
+
+Selective line editing (enter a line number to edit the line)
+Support for marked-down code input
+Support for file-based code input
+Halt program execution command
+Support for multiple files and filetypes
+Support for standard input ("std::cin") during program execution More things that I haven't thought of yet
 

@@ -62,8 +62,8 @@ That's it!
 · Support for zip file library additions\
 · Support for multiple files and filetypes\
 · Support for standard input ("std::cin") during program execution\
-· Support for external library inclusion based on string input
-· Revised program timeout engine
-· Restrictions on system usage
+· Support for external library inclusion based on string input\
+· Revised program timeout engine\
+· Restrictions on system usage\
 · More things that I haven't thought of yet
 

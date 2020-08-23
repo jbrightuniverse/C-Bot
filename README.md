@@ -8,8 +8,8 @@ Most instructions are available when you activate the bot and call `++code`
 Link to the original bot: https://discord.com/api/oauth2/authorize?client_id=746953990910246962&permissions=100352&scope=bot
 
 ## 1. Discord
-Create a Discord account and go to the [Developer Portal](https://discord.com/developers/applications/me).
-Create a new application, then go to `bot` and create a new bot.
+Create a Discord account and go to the [Developer Portal](https://discord.com/developers/applications/me).\
+Create a new application, then go to `bot` and create a new bot.\
 Copy the token, you'll need it later.
 
 ## 2a. repl.it
@@ -31,10 +31,10 @@ Alternatively, you could install this on your local machine.
 6. Run `python3 main.py` (or just `main.py` on some systems).
 
 ## 3. Get the bot
-Go back to the developer portal and go to `Oauth2`.
-Scroll down, click the checkbox beside `bot`.
-Below, hit checkboxes beside `Send Messages`, `Attach Files` and `Read Message History`.
-Hit copy beside the link.
+Go back to the developer portal and go to `Oauth2`.\
+Scroll down, click the checkbox beside `bot`.\
+Below, hit checkboxes beside `Send Messages`, `Attach Files` and `Read Message History`.\
+Hit copy beside the link.\
 Paste the link into your browser to add the bot to servers you own.
 
 That's it!
@@ -45,10 +45,10 @@ That's it!
 
 ## FUTURE UPDATES (in no particular order)
 
-Selective line editing (enter a line number to edit the line)
-Support for marked-down code input
-Support for file-based code input
-Halt program execution command
-Support for multiple files and filetypes
-Support for standard input ("std::cin") during program execution More things that I haven't thought of yet
+· Selective line editing (enter a line number to edit the line)\
+· Support for marked-down code input\
+· Support for file-based code input\
+· Halt program execution command\
+· Support for multiple files and filetypes\
+· Support for standard input ("std::cin") during program execution More things that I haven't thought of yet\
 

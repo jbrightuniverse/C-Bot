@@ -41,12 +41,14 @@ That's it!
 
 ## FUNCTIONALITY UPDATE LOG
 2020-08-23\
+· Added `pause` command to disable reading of lines from the chat until command is called again\
+· Added `overedit` command to move the file edit pointer to a different line and allow overwriting of existing lines\
+· Added `edit` command to move the file edit pointer to a different line\
 · Added `view` command for viewing existing code\
 · Added `view num` command for viewing existing code with line numbers
 
 ## FUTURE UPDATES (in no particular order)
 
-· Selective line editing (enter a line number to edit the line)\
 · Support for input args\
 · Support for zip file library additions\
 · Support for marked-down code input\

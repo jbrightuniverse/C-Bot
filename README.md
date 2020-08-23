@@ -41,9 +41,11 @@ That's it!
 
 ## FUNCTIONALITY UPDATE LOG
 2020-08-23\
-· Added support for command-line args as part of the `run` command. Argument inputs start from index `2`.
-· Added support for file-based text input
-· Added support for code with multiline markdown
+· Modified compiler to time out after 10 seconds (experimental)
+· Added `stop` command to halt a program that is already running\
+· Added support for command-line args as part of the `run` command. Argument inputs start from index `2`.\
+· Added support for file-based text input\
+· Added support for code with multiline markdown\
 · Added `pause` command to disable reading of lines from the chat until command is called again\
 · Added `overedit` command to move the file edit pointer to a different line and allow overwriting of existing lines\
 · Added `edit` command to move the file edit pointer to a different line\
@@ -58,11 +60,9 @@ That's it!
 
 ## FUTURE UPDATES (in no particular order)
 · Support for zip file library additions\
-· Halt program execution command\
 · Support for multiple files and filetypes\
 · Support for standard input ("std::cin") during program execution\
 · Support for external library inclusion based on string input
-· Compiler timeout on excessive runtime
 · Revised program timeout engine
 · Restrictions on system usage
 · More things that I haven't thought of yet

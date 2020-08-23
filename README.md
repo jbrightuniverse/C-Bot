@@ -1,5 +1,5 @@
 # C++Bot
-##C++ Bot for Discord
+## C++ Bot for Discord
 
 This is a bot that runs C++ for use in Discord servers. That's basically it.
 Most instructions are available when you activate the bot and call `++code`
@@ -8,12 +8,12 @@ Most instructions are available when you activate the bot and call `++code`
 
 Link to the original bot: https://discord.com/api/oauth2/authorize?client_id=746953990910246962&permissions=100352&scope=bot
 
-##1. Discord
+## 1. Discord
 Create a Discord account and go to the [Developer Portal](https://discord.com/developers/applications/me).
 Create a new application, then go to `bot` and create a new bot.
 Copy the token, you'll need it later.
 
-##2a. repl.it
+## 2a. repl.it
 The bot is designed to be used inside repl.it, a cloud-based online IDE. As such, it is equipped with files for automatic package installation with Poetry, and a web server designed to keep the bot running longer.
 
 1. Create a new repl through "import from github" and link this repl.
@@ -21,7 +21,7 @@ The bot is designed to be used inside repl.it, a cloud-based online IDE. As such
 3. Hit run. A server window should pop up on the upper right. Copy the URL.
 4. Go to [Uptime Robot](https://uptimerobot.com), make an account, and create a new HTTPs monitor, pasting the URL you just saved. Set polling interval to something more frequent than an hour.
 
-##2b. local install
+## 2b. local install
 Alternatively, you could install this on your local machine.
 
 1. Download the repository as zip and unzip to your computer.
@@ -31,7 +31,7 @@ Alternatively, you could install this on your local machine.
 5. Open a terminal with your Python install and run `pip install discord.py`
 6. Run `python3 main.py` (or just `main.py` on some systems).
 
-##3. Get the bot
+## 3. Get the bot
 Go back to the developer portal and go to `Oauth2`.
 Scroll down, click the checkbox beside `bot`.
 Below, hit checkboxes beside `Send Messages`, `Attach Files` and `Read Message History`.

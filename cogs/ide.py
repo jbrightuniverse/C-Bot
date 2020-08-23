@@ -8,6 +8,7 @@ import subprocess
 import threading
 import time
 import random
+import requests
 
 from io import StringIO
 from util import *
@@ -25,7 +26,10 @@ def enqueue_output(out, out2, queue):
 async def get22(ctx, bot):
   def check(m):
     nonlocal ww
-    ww = m.content
+    if len(m.attachments):
+      file = requests.get(m.attachments[0].url)
+      ww = file.text
+    else: ww = m.content
     return m.channel.id == ctx.channel.id and m.author.id == ctx.author.id
   ww = ""
   try:
@@ -61,7 +65,7 @@ class Ide(bot.Cog):
           return await ctx.send("Exiting.")      
         if val == "pause":
           pause = not pause
-          await ctx.send(["Unpaused program.", "Paused program. Type `pause` again to unpause."][pause])
+          await ctx.send(["Unpaused IDE.", "Paused IDE. Type `pause` again to unpause."][pause])
         elif val == "run" and not pause:
           program = "\n".join(curfunc)
           name = f"userdata/{str(time.time()).replace('.', '')}{random.randrange(1000)}"
@@ -131,6 +135,7 @@ class Ide(bot.Cog):
           await ctx.send(f"Edit pointer set to line **{pointer+1}** with **overwrite existing lines** enabled. Call `edit {pointer+1}` to disable overwrite.")
         elif not pause:
           for line in val.split("\n"):
+            if line.startswith("```"): continue
             if overwrite:
               try: curfunc[pointer] = line
               except: curfunc.insert(pointer, line)

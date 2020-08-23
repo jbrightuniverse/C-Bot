@@ -1,5 +1,6 @@
 import server
 import util
+import var
 
 import discord
 from discord.ext import commands
@@ -26,6 +27,13 @@ async def on_ready():
 async def rl(ctx, ext):
   bot.reload_extension(f"cogs.{ext}")
   await ctx.send(f"reloaded {ext} extension")
+
+@bot.event
+async def on_message(message):
+  phr = f"{message.author.id}{message.channel.id}"
+  if phr in var.msgqueue:
+    var.msgqueue[phr].append(message.content)
+  await bot.process_commands(message)
 
 @bot.command()
 async def help(ctx, *args):

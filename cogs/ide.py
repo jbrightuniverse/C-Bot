@@ -44,13 +44,13 @@ class Ide(bot.Cog):
 
   @bot.command()
   async def code(self, ctx):
-    """Allows you to program C++ inside Discord. Type `'code` to start, and then follow on-screen instructions."""
+    """Allows you to program C++ inside Discord. Type `++code` to start, and then follow on-screen instructions."""
     print(ctx.author)
     if ctx.channel.id in self.channels:
       return await ctx.send(f"Sorry {ctx.author}, this channel is already in use. Please use another one. Thanks!")
     try:
       self.channels.append(ctx.channel.id)
-      await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands:", fields = [["run", "runs your code and then wipes the file you currently have"], ["view (coming soon)", "views the code you have so far"], ["//", "allows you to send text without triggering the bot (send it in the same line)"],["exit", "exits the program"]], footer = "ALPHA RELEASE. Coming soon:\n· support for multiple files\n· undo command\n· view existing code command\n· support for stdin\n\n©2020 James Yu. Automatically released under the MIT License.\nPart of the YuBot family of bots.")
+      await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands:", fields = [["run", "runs your code and then wipes the file you currently have"], ["view (coming soon)", "views the code you have so far"], ["//", "allows you to send text without triggering the bot (send it in the same line)"],["exit", "exits the program"]], footer = "ALPHA RELEASE. Coming soon:\n· support for multiple files\n· undo command\n· view existing code command\n· support for stdin\n\n©2020 James Yu. https://github.com/jbrightuniverse/C-Bot\nPart of the YuBot family of bots.")
       curfunc = []
       while True:
         val = await get22(ctx, self.bot)
@@ -84,10 +84,10 @@ class Ide(bot.Cog):
           while True:
             try:
               line = q.get_nowait()
-              await ctx.send(str(line).replace("b'", "")[:-1][:2000])
+              await ctx.send(line.decode('utf-8')[:2000])
               operator = time.time()
               if proc.poll() != 0:
-                await ctx.send("Resetting.")
+                await ctx.send("Finished. Resetting.")
                 break
             except queue.Empty:
               await asyncio.sleep(0)

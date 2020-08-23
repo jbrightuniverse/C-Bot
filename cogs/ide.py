@@ -49,18 +49,20 @@ class Ide(bot.Cog):
       return await ctx.send(f"Sorry {ctx.author}, this channel is already in use. Please use another one. Thanks!")
     try:
       self.channels.append(ctx.channel.id)
-      await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands (do **NOT** prefix with ++):", fields = [["run", "runs your code and then wipes the file you currently have (temporary behaviour)"], ["view", "views the code you have so far in plaintext"], ["view num", "views the code you have so far, with line numbers"], ["edit 1", "moves the writing pointer to a specified line\nreplace 1 with the line number you wish to edit from"], ["overedit 1", "moves the writing pointer to a specified line, ignoring existing text until you call `edit` again\nreplace 1 with the start line number you wish to edit from"], ["//", "allows you to send text without triggering the bot (send it in the same line)"],["exit", "exits the program"]], footer = "ALPHA RELEASE\n\n©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.\nhttps://github.com/jbrightuniverse/C-Bot\nPart of the YuBot family of bots.")
+      await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands (do **NOT** prefix with ++):", fields = [["run", "runs your code and then wipes the file you currently have (temporary behaviour)"], ["view", "views the code you have so far in plaintext"], ["view num", "views the code you have so far, with line numbers"], ["edit 1", "moves the writing pointer to a specified line\nreplace 1 with the line number you wish to edit from"], ["overedit 1", "moves the writing pointer to a specified line, ignoring existing text until you call `edit` again\nreplace 1 with the start line number you wish to edit from"], ["pause", "disables all commands except `pause`, `view` and `exit` to allow you to send text without triggering the bot\nwhen paused, type `pause` again to unpause"],["exit", "exits the program"]], footer = "ALPHA RELEASE\n\n©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.\nhttps://github.com/jbrightuniverse/C-Bot\nPart of the YuBot family of bots.")
       curfunc = []
       overwrite = False
+      pause = False
       pointer = 0
       while True:
         val = await get22(ctx, self.bot)
         if val.lower() == "exit":
           self.channels.remove(ctx.channel.id)
           return await ctx.send("Exiting.")      
-        if val.startswith("//") or val.startswith("/*"):
-          continue
-        if val == "run":
+        if val == "pause":
+          pause = not pause
+          await ctx.send(["Unpaused program.", "Paused program. Type `pause` again to unpause."][pause])
+        elif val == "run" and not pause:
           program = "\n".join(curfunc)
           name = f"userdata/{str(time.time()).replace('.', '')}{random.randrange(1000)}"
           with open(f"{name}.cpp", "w") as f:
@@ -105,21 +107,37 @@ class Ide(bot.Cog):
         elif val == "view num":
           if not curfunc: await ctx.send("```No code yet!```")
           else:
-            code = "\n".join(curfunc)
-            code = code.split("\n")
+            code = curfunc
             code = [str(c[1]) + ". " + c[0]for c in zip(code, range(1, len(code)+1))]
             upperphr = "```cpp\n"+"\n".join(code)
             await ctx.send(upperphr[:1996]+"\n```")
-        elif val.startswith("edit "):
-          line = val.split()[1]
-          alllines = ("\n".join(curfunc)).split("\n")
-          if not line.isdigit() or int(line)-1 not in range(len(alllines)):
+        elif val.startswith("edit") and not pause:
+          try: line = val.split()[1]
+          except: line = str(len(curfunc)+1)
+          if not line.isdigit() or int(line)-1 not in range(len(curfunc)+1):
             await ctx.send("ERROR: Invalid line number.")
             continue
-          await ctx.send("Enter the text you wish to insert instead/")
-        else:
-          curfunc.append(val)
-          await ctx.send("ok")
+          pointer = int(line)-1
+          overwrite = False
+          await ctx.send(f"Edit pointer set to line **{pointer+1}**. No overwrite.")
+        elif val.startswith("overedit") and not pause:
+          try: line = val.split()[1]
+          except: line = str(len(curfunc)+1)
+          if not line.isdigit() or int(line)-1 not in range(len(curfunc)+1):
+            await ctx.send("ERROR: Invalid line number.")
+            continue
+          pointer = int(line)-1
+          overwrite = True
+          await ctx.send(f"Edit pointer set to line **{pointer+1}** with **overwrite existing lines** enabled. Call `edit {pointer+1}` to disable overwrite.")
+        elif not pause:
+          for line in val.split("\n"):
+            if overwrite:
+              try: curfunc[pointer] = line
+              except: curfunc.insert(pointer, line)
+            else:
+              curfunc.insert(pointer, line)
+            pointer += 1
+          await ctx.send("Ok.")
         
     except Exception as e:
       self.channels.remove(ctx.channel.id)

@@ -53,5 +53,6 @@ That's it!
 · Support for file-based code input\
 · Halt program execution command\
 · Support for multiple files and filetypes\
-· Support for standard input ("std::cin") during program execution More things that I haven't thought of yet
+· Support for standard input ("std::cin") during program execution\
+· More things that I haven't thought of yet
 

@@ -41,7 +41,7 @@ That's it!
 
 ## FUNCTIONALITY UPDATE LOG
 2020-08-23\
-· Modified compiler to time out after 10 seconds (experimental)
+· Modified compiler to time out after 10 seconds (experimental)\
 · Added `stop` command to halt a program that is already running\
 · Added support for command-line args as part of the `run` command. Argument inputs start from index `2`.\
 · Added support for file-based text input\
@@ -58,12 +58,14 @@ That's it!
 · `run` to run code\
 · `exit` to exit the ide
 
-## FUTURE UPDATES (in no particular order)
-· Support for zip file library additions\
+## NEAR FUTURE UPDATES (in no particular order)
 · Support for multiple files and filetypes\
-· Support for standard input ("std::cin") during program execution\
 · Support for external library inclusion based on string input\
 · Revised program timeout engine\
 · Restrictions on system usage\
+
+## FAR FUTURE UPDATES
+· Support for zip file library additions\
+· Support for standard input ("std::cin") during program execution\
 · More things that I haven't thought of yet
 

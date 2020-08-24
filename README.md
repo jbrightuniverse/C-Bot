@@ -41,6 +41,7 @@ That's it!
 
 # FUNCTIONALITY UPDATE LOG
 2020-08-23\
+· Added **limited** support for std:cin (must wait 1 second before sending, only works properly once per program)\
 · Modified compiler to time out after 10 seconds (experimental)\
 · Added `stop` command to halt a program that is already running\
 · Added support for command-line args as part of the `run` command. Argument inputs start from index `2`.\
@@ -66,6 +67,4 @@ That's it!
 
 ## FAR FUTURE UPDATES
 · Support for zip file library additions\
-· Support for standard input ("std::cin") during program execution\
 · More things that I haven't thought of yet
-

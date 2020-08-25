@@ -40,7 +40,7 @@ Paste the link into your browser to add the bot to servers you own.
 That's it!
 
 # FUNCTIONALITY UPDATE LOG
-2020-08-23\
+2020-08-24\
 · Added numerous filesystem commands. See bot documentation for info.
 
 2020-08-23\

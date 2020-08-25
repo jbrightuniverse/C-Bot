@@ -5,8 +5,10 @@ import var
 import discord
 from discord.ext import commands
 
+import importlib
 import os
 import traceback
+import sys
 
 from collections import defaultdict
 
@@ -24,9 +26,15 @@ async def on_ready():
 
 @bot.command(name="reload")
 @commands.is_owner()
-async def rl(ctx, ext):
-  bot.reload_extension(f"cogs.{ext}")
-  await ctx.send(f"reloaded {ext} extension")
+async def rl(ctx):
+  bot.reload_extension(f"cogs.ide")
+  modulecounter = 0
+  for fl in os.listdir("functions"):
+    if fl.endswith("py"):
+      fl = fl[:-3]
+      importlib.reload(sys.modules[f"functions.{fl}"])
+      modulecounter += 1 
+  await ctx.send(f"reloaded {modulecounter} modules from functions and reloaded ide extension")
 
 @bot.event
 async def on_message(message):

@@ -5,7 +5,9 @@ app = Flask('C++Bot')
 
 @app.route('/')
 def main():
-  return "The cake is a lie, there is no spoon and the meaning of life is 42."
+  return """
+Hi
+"""
 
 def run():
   app.run(host="0.0.0.0", port=8080)

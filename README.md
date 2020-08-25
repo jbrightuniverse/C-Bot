@@ -41,6 +41,9 @@ That's it!
 
 # FUNCTIONALITY UPDATE LOG
 2020-08-23\
+· Added numerous filesystem commands. See bot documentation for info.
+
+2020-08-23\
 · Added **limited** support for std:cin (must wait 1 second before sending, only works properly once per program)\
 · Modified compiler to time out after 10 seconds (experimental)\
 · Added `stop` command to halt a program that is already running\
@@ -58,13 +61,3 @@ That's it!
 · type code into the chat to load to file\
 · `run` to run code\
 · `exit` to exit the ide
-
-## NEAR FUTURE UPDATES (in no particular order)
-· Support for multiple files and filetypes\
-· Support for external library inclusion based on string input\
-· Revised program timeout engine\
-· Restrictions on system usage
-
-## FAR FUTURE UPDATES
-· Support for zip file library additions\
-· More things that I haven't thought of yet

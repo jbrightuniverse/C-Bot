@@ -13,9 +13,13 @@ import random
 import requests
 import var
 import traceback
+import tempfile
+import pwd
 
 from functions.filesys import *
 from functions.edit import *
+
+from collections import defaultdict
 
 from io import StringIO
 from util import *
@@ -25,21 +29,47 @@ def enqueue_output(out, out2, queue):
     for line in iter(out.readline, b''):
       queue.put(line)
   except: pass
-  try: 
+  try:
     for line in iter(out2.readline, b''):
       queue.put(line)
   except: pass
   out.close()
   out2.close()
 
-async def get22(ctx, bot):
+def enqueue_output2(out, out2, queue, queue2):
+  try:
+    for line in iter(out.readline, b''):
+      queue.put(line)
+  except: pass
+  try:
+    for line in iter(out2.readline, b''):
+      queue2.put(line)
+  except: pass
+  out.close()
+  out2.close()
+
+
+async def get22(ctx, bot, users):
   def check(m):
     nonlocal ww
     if len(m.attachments):
-      file = requests.get(m.attachments[0].url)
-      ww = file.text
+      type =  m.attachments[0].url.split(".")[-1].split("?")[0]
+      if not type.startswith("png") and not type.startswith("bmp") and not type.startswith("jpeg") and not type.startswith("jpg") and not type.startswith("txt"):
+        ww = "upload fail"
+      elif not m.content.lower().startswith("upload"):
+        ww = f"upload {int(time.time())}.{type} {m.attachments[0].url}"
+      else:
+        filename = m.content.split(".")
+        if len(filename) == 1: 
+          filename.append(f"{int(time.time())}.{type}")
+          filename[0] += " "
+          m.content = " ".join(filename)
+        else: 
+          filename[-1] = type
+          m.content = ".".join(filename)
+        ww = m.content + " "+ m.attachments[0].url
     else: ww = m.content
-    return m.channel.id == ctx.channel.id and m.author.id == ctx.author.id
+    return m.channel.id == ctx.channel.id and m.author.id in users
   ww = ""
   try:
     confirm1 = await bot.wait_for("message", timeout = 600, check = check)
@@ -53,20 +83,69 @@ class Ide(bot.Cog):
 
   def __init__(self, bot):
     self.bot = bot
-    self.channels = []
+    self.channels = {}
+
+  @bot.command()
+  async def leave(self, ctx):
+    """Leaves a coding channel if you have joined it."""
+    user = ctx.author.id
+    if user in self.channels:
+      channel = self.channels[user]["channel"]
+      del self.channels[user]
+      return await ctx.send(f"A ghost channel has been constructed in <#{channel}>. Be sure to exit.")
+    for user in self.channels:
+      if ctx.author.id in self.channels[user]["users"]:
+        self.channels[user]["users"].remove(ctx.author.id)
+        return await ctx.send(f"Ok {ctx.author}, you have left this session.")
+    await ctx.send(f"{ctx.author}, you are not in this session.")
 
   @bot.command()
   async def code(self, ctx):
     """Allows you to program C++ inside Discord. Type `++code` to start, and then type `help` for full docs."""
-    if ctx.channel.id in self.channels:
-      return await ctx.send(f"Sorry {ctx.author}, this channel is already in use. Please use another one. Thanks!")
+    userlist = []
+    for u in self.channels:
+      userlist += self.channels[u]["users"]
+    if ctx.author.id in self.channels or ctx.author.id in userlist:
+      if ctx.author.id in self.channels: channel = self.channels[ctx.author.id]["channel"]
+      else: 
+         for u in self.channels:
+           if ctx.author.id in self.channels[u]["users"]:
+             channel = self.channels[u]["channel"]
+             break
+      return await ctx.send(f"Sorry {ctx.author}, you already have a session running in <#{channel}>.")
+    if ctx.channel.id in [self.channels[a]["channel"] for a in self.channels]:
+      for user in self.channels:
+        if self.channels[user]["channel"] == ctx.channel.id:
+          await ctx.send(f"<@{user}>, do you authorize this user to join? Type `yes` to confirm or `no` to not.")
+          res = await get22(ctx, self.bot, [user])
+          if res != "yes":
+            return await ctx.send("Denied.")
+          else:
+            self.channels[user]["users"].append(ctx.author.id)
+            break
+      return await ctx.send(f"Added {ctx.author} to channel.") 
+    self.channels[ctx.author.id] = {
+      "channel": ctx.channel.id,
+      "users": []
+    }
     def handler(signum, frame):
       raise Exception("compilation taking too long")
     signal.signal(signal.SIGALRM, handler)
-    foldername = str(ctx.author.id)
-    self.channels.append(ctx.channel.id)
-    try: os.mkdir(f"userdata/{foldername}")
+    user = str(ctx.author.id)
+    try: os.mkdir(f"/home/james/userdata/{user}")
     except: pass
+    foldername = f"/home/james/userdata/{user}"
+    res = subprocess.Popen(f"sudo chmod 777 {foldername}", stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell = True)
+    res.wait()
+    #f = res.communicate()
+    #await ctx.send(f)
+    #foldername = foldername[0].decode('utf-8')
+    #os.chmod("/home/james/userdata/", 777)
+    #os.chmod(foldername, 777)
+    res = subprocess.Popen(f"sudo useradd -s /bin/bash -d {foldername} -M {user}".split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    res.wait()
+    res = subprocess.Popen(f"sudo setquota -u {user} 200M 200M 50 50 /".split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    res.wait()
     try:
       curfunc = {
         "/main.cpp":{
@@ -77,21 +156,37 @@ class Ide(bot.Cog):
       }
       curdata = {
         "curfile": "/main.cpp",
-        "curdir": "/"
+        "curdir": "/",
+        "path": foldername,
+        "prime": []
       }
       pause = False
-      await mbed(ctx, "Discord C++", "Type `help` for a commands list.", footer = "©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.")
+      await mbed(ctx, "Discord C++", "Type `help` for a commands list.", footer = "©2020 James Yu.")
       while True:
-        val = await get22(ctx, self.bot)
+        val = await get22(ctx, self.bot, self.channels[ctx.author.id]["users"]+[ctx.author.id])
         if val.lower() == "exit":
-          self.channels.remove(ctx.channel.id)
-          return await ctx.send("Exiting.") 
+          shutil.rmtree(foldername)
+          res = subprocess.Popen(f"sudo userdel {user}".split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+          res.wait()
+          try: del self.channels[ctx.author.id]
+          except: pass
+          return await ctx.send("Exiting.")
+        elif val.lower() in ["yes", "no", "++leave", "++code"]:
+          pass
+
         elif "z" + val.split()[0].lower() in editfunctions + sysfunctions and not pause:
           await globals()["z" + val.split()[0].lower()](ctx, val, curfunc, curdata)
+
+
         elif val.lower() == "pause":
           pause = not pause
           await ctx.send(["Unpaused IDE.", "Paused IDE. Type `pause` again to unpause."][pause])
+
+
         elif val.lower().startswith("view"):
+          if len(val.split()) == 2 and os.path.isfile(f"{foldername}{curdata['curdir']}" + val.split()[1]):
+            await ctx.send(file = discord.File(f"{foldername}{curdata['curdir']}" + val.split()[1]))
+            continue
           curfile = curdata["curfile"]
           await ctx.send(f"**{curfile}**")
           code = curfunc[curfile]["code"]
@@ -101,85 +196,135 @@ class Ide(bot.Cog):
             else: todisplay = code
             upperphr = "```cpp\n"+"\n".join(todisplay)
             await ctx.send(upperphr[:1996]+"\n```")
-        elif val.lower() == "save" and not pause:
-          for file in curfunc:
-            path = file.split("/")
-            if path[-1] == "Makefile":
-              replace_tabs = True
-            else:
-              replace_tabs = False
-            del path[-1]
-            folder = "/".join(path)
-            try: os.makedirs(f"userdata/{foldername}{folder}")
-            except: pass
-            with open(f"userdata/{foldername}{file}", "w") as f:
-              if not replace_tabs:
-                text = "\n".join(curfunc[file]["code"])
-              else:
-                out = []
-                for line in curfunc[file]["code"]:
-                  if line.startswith("    "):
-                    out.append('\t' + line[4:])
-                  else: out.append(line)
-                text = "\n".join(out)
-              f.write(text)
-          await ctx.send("Saved current workspace.")
+
+
+        elif val.lower().startswith("upload") and not pause:
+          if val == "upload fail":
+            await ctx.send("ERROR: Unsupported filetype for direct upload.")
+            continue
+          args = val.split()
+          if (len(args) != 3):
+            await ctx.send("ERROR: Please specify a name.")
+            continue
+          if curdata['curdir']+args[1] in curdata["prime"] or curdata['curdir']+args[1] in curfunc:
+            await ctx.send("ERROR: Filename in use.")
+            continue
+          url = args[2]
+          res = requests.get(url, stream=True)
+          os.makedirs(f"{foldername}{curdata['curdir']}", exist_ok = True)
+          with open(f"{foldername}{curdata['curdir']}"+args[1], 'wb') as f:
+            for line in res.iter_content():
+              await asyncio.sleep(0)
+              f.write(line)
+          curdata["prime"].append(curdata['curdir']+args[1])
+          await ctx.send(f"Saved file to **{curdata['curdir']+args[1]}**.")
+
+
         elif val.lower().startswith("make") and not pause:
           for file in curfunc:
             path = file.split("/")
-            if path[-1] == "Makefile":
-              replace_tabs = True
-            else:
-              replace_tabs = False
             del path[-1]
             folder = "/".join(path)
-            try: os.makedirs(f"userdata/{foldername}{folder}")
-            except: pass
-            with open(f"userdata/{foldername}{file}", "w") as f:
-              if not replace_tabs:
-                text = "\n".join(curfunc[file]["code"])
-              else:
-                out = []
-                for line in curfunc[file]["code"]:
-                  if line.startswith("    "):
-                    out.append('\t' + line[4:])
-                  else: out.append(line)
-                text = "\n".join(out)
+            os.makedirs(f"{foldername}{folder}", exist_ok = True)
+            with open(f"{foldername}{file}", "w") as f:
+              out = []
+              for line in curfunc[file]["code"]:
+                out.append(line)
+                check = " ".join(line.split())
+                if "int main" in check and "}" in check:
+                  check = check.split("{")
+                  check[1] = "std::atexit(exitfunc);" + check[1]
+                  check ="{".join(check)
+                  out.insert(0, 'void exitfunc() {std::cout << std::endl; std::cout << "221TERMINATEIMMEDIATELY" << std::endl;}')
+                  out.insert(0, "#include <cstdlib>")
+                  out.insert(0, "#include <iostream>") 
+                elif "int main(" in check or "int main (" in check and "}" not in check:
+                  out.append("std::atexit(exitfunc);")
+                  out.insert(0, 'void exitfunc() {std::cout << std::endl; std::cout << "221TERMINATEIMMEDIATELY" << std::endl;}')
+                  out.insert(0, "#include <cstdlib>")
+                  out.insert(0, "#include <iostream>")
+              text = "\n".join(out)
               f.write(text)
+          shutil.copy2("Makefile", f"{foldername}/Makefile")
+          if val.lower() == "make 221":
+            shutil.copytree("cs221util", f"{foldername}/cs221util")
           msg = await ctx.send("Saved current workspace. Compiling...")
           signal.alarm(600)
+          flag = None
           res = None
+          b = None
+          os.chdir(foldername)
+          res = subprocess.Popen(["make","clean"], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+          res.wait()
           try:
-            os.chdir(f"userdata/{foldername}")
             res = subprocess.Popen(["make"], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-            os.chdir("/home/runner/CBot")
-            res.wait()
-            b = res.communicate()
-            if b[1]:
-              tx = b[1].decode('utf-8').split("\n")
-              if " Error " not in tx:
-                await ctx.send(f"Warning:\n```{tx[:1978]}```")
+            os.chdir("/home/james/cbot")
+            while True:
+              if res.poll() == None:
+                await asyncio.sleep(0)
               else:
-                await ctx.send(f"COMPILE ERROR:\n```{tx[:1970]}```")
-                signal.alarm(0)
-                continue
+                b = res.communicate()
+                tx = b[1].decode('utf-8')
+                if not f"{tx}": break
+                if " Error " not in tx and "Stop." not in tx:
+                  await ctx.send(f"Warning:\n```{tx[:1978]}```")
+                  break
+                else:
+                  await ctx.send(f"COMPILE ERROR:\n```{tx[:1970]}```")
+                  signal.alarm(0)
+                  os.remove(f"{foldername}/Makefile")
+                  if val.lower() == "make 221":
+                    shutil.rmtree(f"{foldername}/cs221util")
+                  for file in curfunc:
+                    os.remove(f"{foldername}{file}")
+                  flag = True
+                  break
+            if flag: continue
+
           except:
             res.kill()
             await ctx.send(f"ERROR: {e}")
             signal.alarm(0)
+            os.remove(f"{foldername}/Makefile")
+            if val.lower() == "make 221":
+              shutil.rmtree(f"{foldername}/cs221util")
+            for file in curfunc:
+              os.remove(f"{foldername}{file}")
             continue
           signal.alarm(0)
+          os.remove(f"{foldername}/Makefile")
+          if val.lower() == "make 221":
+            shutil.rmtree(f"{foldername}/cs221util")
+          for file in curfunc:
+            os.remove(f"{foldername}{file}")
           await msg.edit(content = f"Finished compilng.\n```{b[0].decode('utf-8')}```")
-        elif val.lower().startswith("./") and not pause:
-          args = [a.rstrip().lstrip() for a in val.split(",")]
+
+
+        elif val.lower().startswith("run") and not pause:
+          if val.endswith("cin"):
+            val = val[:-3]
+            cin = True
+          else:
+            cin = False
+          args = " ".join(val.split()[1:])
           try:
-            os.chdir(f"userdata/{foldername}")
-            proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
+            #res = subprocess.Popen(f"sudo chown -R {user}:{user} {foldername}/*", stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
+            #res.wait()
+            #b = res.communicate()
+            #await ctx.send(b)
+            #res = subprocess.Popen(f"runuser -l {user} -c 'cd {foldername}'", stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
+            #res.wait()
+            #res = subprocess.Popen(f"runuser -l {user} -c 'ls'", stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
+            #res.wait()
+            #b = res.communicate()
+            #await ctx.send(b)
+            proc = subprocess.Popen(f"runuser -l {user} -c './main {args}'", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
           except Exception as e:
-            os.chdir("/home/runner/CBot")
-            await ctx.send(f"ERROR: {e}")
+            #os.chdir("/home/james/cbot")
+            await ctx.send(f"PROCESS LAUNCH ERROR: {e}")
             continue
-          os.chdir("/home/runner/CBot")
+          await ctx.send("Running. Type `stop` to stop the program.")
+          #os.chdir("/home/james/cbot")
           q = queue.Queue()
           t = threading.Thread(target=enqueue_output, args=(proc.stdout, proc.stderr, q))
           t.daemon = True
@@ -187,36 +332,46 @@ class Ide(bot.Cog):
           operator = time.time()
           phr = f"{ctx.author.id}{ctx.channel.id}"
           var.msgqueue[phr] = []
+          outcounter = 0
           while True:
             try:
               line = q.get_nowait()
+              if "221TERMINATEIMMEDIATELY" in line.decode('utf-8'):
+                await ctx.send("Program complete.")
+                break
               try: await ctx.send(line.decode('utf-8')[:2000])
               except: pass
+              outcounter+= 1
               operator = time.time()
-              """
-              if proc.poll() != 0:
-                await ctx.send("Finished. Resetting.")
-                break
-              """
             except queue.Empty:
               await asyncio.sleep(0)
-            if time.time() - operator > 60:
-              await ctx.send("Exceeded alotted unresponsive wait time of 60 seconds. Resetting.")
+            if time.time() - operator > 600:
+              await ctx.send("Exceeded alotted unresponsive wait time of 600 seconds. Halting.")
               proc.kill()
               break 
+            if outcounter == 15:
+              await ctx.send("Exceeded alotted message buffer of 15 messages. Halting.")
+              proc.kill()
+              break
             if len(var.msgqueue[phr]):
               nput = var.msgqueue[phr].pop(0)
               if nput == "stop":
-                await ctx.send("Halting and resetting.")
+                await ctx.send("Halting.")
                 proc.kill()  
                 break
               elif cin:
                 res = proc.communicate(input=nput.encode())[0]
                 await ctx.send(f"Input received.\n{res.decode('utf-8')}")
           del var.msgqueue[phr]
+
+
         elif not pause:
           curfile = curdata["curfile"]
+          exceptions = ["tmp", "##", "execl", "execlp", "execle", "execv", "execvp", "execvpe", "system", "fork", "vfork", "clone", "posix_spawn", "sigaction", "dlsym", "dlopen", "chmod", "chown", "fchdir", "chroot", "setuid"]
           for line in val.split("\n"):
+            if any(x in line.lower() for x in exceptions):
+              await ctx.send("Terminated codewrite. One of your lines contains a banned function or phrase.")
+              break
             if line.startswith("```"): continue
             if curfunc[curfile]["overwrite"]:
               try: curfunc[curfile]["code"][curfunc[curfile]["pointer"]] = line
@@ -225,9 +380,13 @@ class Ide(bot.Cog):
               curfunc[curfile]["code"].insert(curfunc[curfile]["pointer"], line)
             curfunc[curfile]["pointer"] += 1
           await ctx.send("Ok.")
-        
+
     except Exception as e:
-      self.channels.remove(ctx.channel.id)
+      shutil.rmtree(foldername)
+      res = subprocess.Popen(f"sudo userdel {user}".split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+      res.wait()
+      try: del self.channels[ctx.author.id]
+      except: pass
       if foldername in var.msgqueue:
         del var.msgqueue[foldername]
       phrase = ''.join(traceback.format_exception(type(e), e, e.__traceback__, 999)).replace("`", "\`")[:1967]

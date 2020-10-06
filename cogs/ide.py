@@ -415,7 +415,7 @@ class Ide(bot.Cog):
           toinsert = todisplay[base:top]
           if base != 0: toinsert.insert(0, "...")
           if top != len(code): toinsert.append("...")
-          upperphr = "```cpp\n"+"\n".join(toinsert[base:top])
+          upperphr = "```cpp\n"+"\n".join(toinsert)
           await ctx.send(upperphr[:1996]+"\n```")
 
 

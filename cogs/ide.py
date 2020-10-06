@@ -211,7 +211,7 @@ class Ide(bot.Cog):
               todisplay[i] = " "*indentcounter + todisplay[i]
               if todisplay[i].count("{") > todisplay[i].count("}"):
                 indentcounter += 4*(todisplay[i].count("{"))
-            if val.lower().endswith("num"): todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
+            if val.lower().endswith("num"): todisplay = [str(c[1]).rjust(2) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
             upperphr = "```cpp\n"+"\n".join(todisplay)
             await ctx.send(upperphr[:1996]+"\n```")
 
@@ -409,8 +409,13 @@ class Ide(bot.Cog):
             todisplay[i] = " "*indentcounter + todisplay[i]
             if todisplay[i].count("{") > todisplay[i].count("}"):
               indentcounter += 4*(todisplay[i].count("{"))
-          todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
-          upperphr = "```cpp\n"+"\n".join(todisplay[max(0, pointer-5):min(pointer+3, len(code))])
+          todisplay = [str(c[1]).rjust(2) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
+          base = mac(0, pointer-5)
+          top = min(pointer+3, len(code))
+          toinsert = todisplay[base:top]
+          if base != 0: toinsert.insert(0, "...")
+          if top != len(code): toinsert.append("...")
+          upperphr = "```cpp\n"+"\n".join(todisplay[base:top])
           await ctx.send(upperphr[:1996]+"\n```")
 
 

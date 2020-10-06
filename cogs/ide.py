@@ -410,7 +410,7 @@ class Ide(bot.Cog):
             if todisplay[i].count("{") > todisplay[i].count("}"):
               indentcounter += 4*(todisplay[i].count("{"))
           todisplay = [str(c[1]).rjust(2) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
-          base = mac(0, pointer-5)
+          base = max(0, pointer-5)
           top = min(pointer+3, len(code))
           toinsert = todisplay[base:top]
           if base != 0: toinsert.insert(0, "...")

@@ -86,6 +86,14 @@ class Ide(bot.Cog):
     self.channels = {}
 
   @bot.command()
+  async def chelp(self, ctx):
+    await globals()["zhelp"](ctx, "zhelp", None, None) 
+
+  @bot.command()
+  async def sessions(self, ctx):
+    await ctx.send(len(self.channels.keys()))
+
+  @bot.command()
   async def leave(self, ctx):
     """Leaves a coding channel if you have joined it."""
     user = ctx.author.id
@@ -160,11 +168,12 @@ class Ide(bot.Cog):
         "path": foldername,
         "prime": []
       }
-      pause = False
-      await mbed(ctx, "Discord C++", "Type `help` for a commands list.", footer = "©2020 James Yu.")
+      pause = True
+      await mbed(ctx, "Discord C++", "Type `help` for a commands list.\nThe IDE is currently paused. Type `code` to start programming in `main.cpp`")
       while True:
-        val = await get22(ctx, self.bot, self.channels[ctx.author.id]["users"]+[ctx.author.id])
-        if val.lower() == "exit":
+        checkval = await get22(ctx, self.bot, self.channels[ctx.author.id]["users"]+[ctx.author.id])
+        val = checkval.replace("++", "")
+        if val.lower() == "exit" or val.lower() == "stop":
           shutil.rmtree(foldername)
           res = subprocess.Popen(f"sudo userdel {user}".split(), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
           res.wait()
@@ -174,13 +183,15 @@ class Ide(bot.Cog):
         elif val.lower() in ["yes", "no", "++leave", "++code"]:
           pass
 
-        elif "z" + val.split()[0].lower() in editfunctions + sysfunctions and not pause:
-          await globals()["z" + val.split()[0].lower()](ctx, val, curfunc, curdata)
+        elif "z" + val.split()[0].lower() in editfunctions + sysfunctions:
+          if val.split()[0].lower() == "help" or not pause:
+            await globals()["z" + val.split()[0].lower()](ctx, val, curfunc, curdata)
+          else:
+            await ctx.send("IDE is currently paused. Type `pause` or `code` to unpause the IDE.")
 
-
-        elif val.lower() == "pause":
+        elif val.lower() == "pause" or val.lower() == "code":
           pause = not pause
-          await ctx.send(["Unpaused IDE.", "Paused IDE. Type `pause` again to unpause."][pause])
+          await ctx.send(["Unpaused IDE. Type `exit` or `stop` to exit.", "Paused IDE. Type `pause` again to unpause."][pause])
 
 
         elif val.lower().startswith("view"):
@@ -367,8 +378,8 @@ class Ide(bot.Cog):
 
         elif not pause:
           curfile = curdata["curfile"]
-          exceptions = ["tmp", "##", "execl", "execlp", "execle", "execv", "execvp", "execvpe", "system", "fork", "vfork", "clone", "posix_spawn", "sigaction", "dlsym", "dlopen", "chmod", "chown", "fchdir", "chroot", "setuid"]
-          for line in val.split("\n"):
+          exceptions = ["popen", "tmp", "##", "execl", "execlp", "execle", "execv", "execvp", "execvpe", "system", "fork", "vfork", "clone", "posix_spawn", "sigaction", "dlsym", "dlopen", "chmod", "chown", "fchdir", "chroot", "setuid"]
+          for line in checkval.split("\n"):
             if any(x in line.lower() for x in exceptions):
               await ctx.send("Terminated codewrite. One of your lines contains a banned function or phrase.")
               break
@@ -379,7 +390,14 @@ class Ide(bot.Cog):
             else:
               curfunc[curfile]["code"].insert(curfunc[curfile]["pointer"], line)
             curfunc[curfile]["pointer"] += 1
-          await ctx.send("Ok.")
+          pointer = curfunc[curfile]["pointer"]
+          curfile = curdata["curfile"]
+          code = curfunc[curfile]["code"]
+          await ctx.send(f"Added line to **{curfile}**.")
+          todisplay = [str(c[1]) + ". " + c[0]for c in zip(code[max(0, pointer-3):min(pointer+3, len(code))], range(max(1, pointer-2), min(pointer+4, len(code)+1)))]
+          upperphr = "```cpp\n"+"\n".join(todisplay)
+          await ctx.send(upperphr[:1996]+"\n```")
+
 
     except Exception as e:
       shutil.rmtree(foldername)

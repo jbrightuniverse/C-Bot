@@ -206,9 +206,11 @@ class Ide(bot.Cog):
             todisplay = code.copy()
             indentcounter = 0
             for i in range(len(todisplay)):
-              indentcounter -= 4*(todisplay[i].count("}"))
+              if todisplay[i].count("}") > todisplay[i].count("{"):
+                indentcounter -= 4
               todisplay[i] = " "*indentcounter + todisplay[i]
-              indentcounter += 4*(todisplay[i].count("{"))
+              if todisplay[i].count("{") > todisplay[i].count("}"):
+                indentcounter += 4*(todisplay[i].count("{"))
             if val.lower().endswith("num"): todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
             upperphr = "```cpp\n"+"\n".join(todisplay)
             await ctx.send(upperphr[:1996]+"\n```")
@@ -402,9 +404,11 @@ class Ide(bot.Cog):
           todisplay = code.copy()
           indentcounter = 0
           for i in range(len(todisplay)):
-            indentcounter -= 4*(todisplay[i].count("}"))
+            if todisplay[i].count("}") > todisplay[i].count("{"):
+              indentcounter -= 4
             todisplay[i] = " "*indentcounter + todisplay[i]
-            indentcounter += 4*(todisplay[i].count("{"))
+            if todisplay[i].count("{") > todisplay[i].count("}"):
+              indentcounter += 4*(todisplay[i].count("{"))
           todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
           upperphr = "```cpp\n"+"\n".join(todisplay[max(0, pointer-3):min(pointer+3, len(code))])
           await ctx.send(upperphr[:1996]+"\n```")

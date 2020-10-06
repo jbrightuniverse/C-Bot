@@ -410,7 +410,7 @@ class Ide(bot.Cog):
             if todisplay[i].count("{") > todisplay[i].count("}"):
               indentcounter += 4*(todisplay[i].count("{"))
           todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
-          upperphr = "```cpp\n"+"\n".join(todisplay[max(0, pointer-3):min(pointer+3, len(code))])
+          upperphr = "```cpp\n"+"\n".join(todisplay[max(0, pointer-5):min(pointer+3, len(code))])
           await ctx.send(upperphr[:1996]+"\n```")
 
 

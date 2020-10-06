@@ -203,8 +203,13 @@ class Ide(bot.Cog):
           code = curfunc[curfile]["code"]
           if not code: await ctx.send("```No code yet!```")
           else:
-            if val.lower().endswith("num"): todisplay = [str(c[1]) + ". " + c[0]for c in zip(code, range(1, len(code)+1))]
-            else: todisplay = code
+            todisplay = code.copy()
+            indentcounter = 0
+            for i in range(len(todisplay)):
+              indentcounter -= 4*(todisplay[i].count("}"))
+              todisplay[i] = " "*indentcounter + todisplay[i]
+              indentcounter += 4*(todisplay[i].count("{"))
+            if val.lower().endswith("num"): todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
             upperphr = "```cpp\n"+"\n".join(todisplay)
             await ctx.send(upperphr[:1996]+"\n```")
 
@@ -385,17 +390,23 @@ class Ide(bot.Cog):
               break
             if line.startswith("```"): continue
             if curfunc[curfile]["overwrite"]:
-              try: curfunc[curfile]["code"][curfunc[curfile]["pointer"]] = line
-              except: curfunc[curfile]["code"].insert(curfunc[curfile]["pointer"], line)
+              try: curfunc[curfile]["code"][curfunc[curfile]["pointer"]] = line.lstrip()
+              except: curfunc[curfile]["code"].insert(curfunc[curfile]["pointer"], line.lstrip())
             else:
-              curfunc[curfile]["code"].insert(curfunc[curfile]["pointer"], line)
+              curfunc[curfile]["code"].insert(curfunc[curfile]["pointer"], line.lstrip())
             curfunc[curfile]["pointer"] += 1
           pointer = curfunc[curfile]["pointer"]
           curfile = curdata["curfile"]
           code = curfunc[curfile]["code"]
           await ctx.send(f"Added line to **{curfile}**.")
-          todisplay = [str(c[1]) + ". " + c[0]for c in zip(code[max(0, pointer-3):min(pointer+3, len(code))], range(max(1, pointer-2), min(pointer+4, len(code)+1)))]
-          upperphr = "```cpp\n"+"\n".join(todisplay)
+          todisplay = code.copy()
+          indentcounter = 0
+          for i in range(len(todisplay)):
+            indentcounter -= 4*(todisplay[i].count("}"))
+            todisplay[i] = " "*indentcounter + todisplay[i]
+            indentcounter += 4*(todisplay[i].count("{"))
+          todisplay = [str(c[1]) + ". " + c[0] for c in zip(todisplay, range(1, len(todisplay)+1))]
+          upperphr = "```cpp\n"+"\n".join(todisplay[max(0, pointer-3):min(pointer+3, len(code))])
           await ctx.send(upperphr[:1996]+"\n```")
 
 

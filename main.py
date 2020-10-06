@@ -92,5 +92,5 @@ async def on_command_error(ctx, error):
   else:
     msg = "An error has occurred!\n```" + "".join(traceback.format_exception(type(error), error, error.__traceback__, 999)) + "```"
     await ctx.send(msg[:2000])
-
-bot.run("NzQ2OTUzOTkwOTEwMjQ2OTYy.X0H1HQ.F1THezcJDBSRjH9RIKDlsg4qAs8", bot=True, reconnect=True)
+with open("tokenfile.txt") as f:
+bot.run(f.readline().replace("\n", ""), bot=True, reconnect=True)

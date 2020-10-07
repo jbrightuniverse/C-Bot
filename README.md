@@ -13,10 +13,10 @@ Create a new application, then go to `bot` and create a new bot.\
 Copy the token, you'll need it later.
 
 ## 2. Install
-1. Download the repository as zip and unzip to your computer.\
-2. Download Python 3.8 if you don't have it already.\
-3. Create a file named `tokenfile.txt` with your bot token from before.\
-4. Open a terminal with your Python install and run `pip install discord.py`\
+1. Download the repository as zip and unzip to your computer.
+2. Download Python 3.8 if you don't have it already.
+3. Create a file named `tokenfile.txt` with your bot token from before.
+4. Open a terminal with your Python install and run `pip install discord.py`
 5. Run `python3 main.py` (or just `main.py` on some systems).
 
 ## 3. Get the bot

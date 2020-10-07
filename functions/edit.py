@@ -37,7 +37,7 @@ async def zedit(ctx, val, curfunc, curdata):
   await ctx.send(f"Edit pointer set to line **{pointer+1}**{extra}")
 
 async def zhelp(ctx, val, curfunc, curdata):
-  await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands (do **NOT** prefix with ++):", 
+  await mbed(ctx, "Welcome to Discord C++", "To use the interpreter, first type `++code` to launch the bot and then `code` to start coding.\nThen type the code you wish to execute line by line (or many lines at once) into the chat.\nThere are also a few special commands (do **NOT** prefix with ++):", 
   fields = [
   ["make", "compiles your code\ntype `make 221` to include cs221util"],
   ["run", "runs your code\ntype `run <arg1>, <arg2>, <argn>`(etc) to run program with command-line arguments"], 
@@ -57,4 +57,6 @@ async def zhelp(ctx, val, curfunc, curdata):
   ["about", "explains the current state of the program"],
   ["ls", "lists all files in the current directory\ntype `ls all` to view all files"],
   ["upload filename.ext", "uploads a file to the internal filesystem\nsupports images and txt files only\nthese files cannot be edited nor renamed, but can be deleted"],
+  ["++leave", "leaves a session that someone else is running"],
+  ["++code", "if you use this command where someone else is already coding, they will be able to add you to their session and share files"],
   ["exit", "exits the program"]], footer = "©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.\nPart of the YuBot family of bots.")

@@ -147,6 +147,7 @@ async def zls(ctx, val, curfunc, curdata):
           output.append(opath.replace(curdata["path"], "") + file + " (internal)")
       text = "\n".join(sorted(output))
     await ctx.send(text[:2000])
-  except:
-    await ctx.send("ERROR: Filesystem too large to print.")
+  except Exception as e:
+    if "No such file or directory" in str(e): await ctx.send("Folder is empty.")
+    else: await ctx.send(f"ERROR: Filesystem print failure.\nFull error: {e}")
   signal.alarm(0)

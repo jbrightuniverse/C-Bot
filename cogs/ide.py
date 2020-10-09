@@ -98,12 +98,8 @@ class Ide(bot.Cog):
     """Leaves a coding channel if you have joined it."""
     user = ctx.author.id
     if user in self.channels:
-      if len(self.channels[user]) == 1:
-        await ctx.send(f"A ghost channel has been constructed in <#{channel}>. Be sure to exit.")
-        return await ctx.send("ERROR:```\nhttps://www.youtube.com/watch?v=ub82Xb1C8os\n```") 
-      channel = self.channels[user]["channel"]
-      del self.channels[user]
-      return await ctx.send(f"A ghost channel has been constructed in <#{channel}>. Be sure to exit.")
+      await ctx.send(f"A ghost channel has been constructed in <#{channel}>. Be sure to exit.")
+      return await ctx.send("ERROR:```\nGhost channel constructed. See https://www.youtube.com/watch?v=ub82Xb1C8os to fix.\n```") 
     for user in self.channels:
       if ctx.author.id in self.channels[user]["users"]:
         self.channels[user]["users"].remove(ctx.author.id)

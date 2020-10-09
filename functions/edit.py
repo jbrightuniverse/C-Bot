@@ -59,4 +59,4 @@ async def zhelp(ctx, val, curfunc, curdata):
   ["upload filename.ext", "uploads a file to the internal filesystem\nsupports images and txt files only\nthese files cannot be edited nor renamed, but can be deleted"],
   ["++leave", "leaves a session that someone else is running"],
   ["++code", "if you use this command where someone else is already coding, they will be able to add you to their session and share files"],
-  ["exit", "exits the program"]], footer = "©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.\nPart of the YuBot family of bots.")
+  ["exit", "exits the program"]], footer = "Video Tutorial: https://www.youtube.com/watch?v=rFv_qmNOZmg\n©2020 James Yu.\nDISCLAIMER: I will not be held responsible for any injury, harm or misconduct arising from improper usage of the service.\nPart of the YuBot family of bots.")

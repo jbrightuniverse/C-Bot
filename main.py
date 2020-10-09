@@ -62,7 +62,7 @@ async def help(ctx, *args):
     fields = list(zip([bot.get_cog(name).description for name in cogdict], [", ".join(cogdict[name]) for name in cogdict]))
     with open("version.txt") as f:
       ver = f.readline()
-    fields.append(["Try ++help <command> for specific command help.", f"Or ping <@375445489627299851>\n\n{len(bot.guilds)} servers and counting\nVersion {ver}"])
+    fields.append(["Try ++help <command> for specific command help.", f"Or ping <@375445489627299851>\nVideo Tutorial: https://www.youtube.com/watch?v=rFv_qmNOZmg\n\n{len(bot.guilds)} servers and counting\nVersion {ver}"])
     return await util.mbed(ctx, "C++Bot", "Hi there! I'm a bot that can run C++ inside Discord.\nYou might be looking for `++code` help. Type `++code` and then `help` to find it.\n\nType **++help all** or **++help <module>** (e.g. ++help ide) for more details.", fields = fields, thumbnail = bot.user.avatar_url)
   if args[0] == "all" or args[0].lower().title() in cogs:
     if args[0] == "all": lst = cogs

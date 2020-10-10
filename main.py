@@ -92,7 +92,7 @@ async def on_command_error(ctx, error):
   else:
     msg = "An error has occurred!\n```" + "".join(traceback.format_exception(type(error), error, error.__traceback__, 999)) + "```"
     await ctx.send(msg[:2000])
-    usr = bot.get_user(375445489627299851)
+    usr = bot.get_user(375445489627299851) # replace with owner id
     await usr.send(msg[:2000])
 
 with open("tokenfile.txt") as f:

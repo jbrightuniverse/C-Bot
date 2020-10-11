@@ -16,8 +16,9 @@ Copy the token, you'll need it later.
 1. Download the repository as zip and unzip to your computer.
 2. Download Python 3.8 if you don't have it already.
 3. Create a file named `tokenfile.txt` with your bot token from before.
-4. Open a terminal with your Python install and run `pip install discord.py`
-5. Run `python3 main.py` (or just `main.py` on some systems).
+4. Create a folder named `userdata` at the same level as the bot folder.
+5. Open a terminal with your Python install and run `pip install discord.py`
+6. Run `python3 main.py` (or just `main.py` on some systems).
 
 ## 3. Get the bot
 Go back to the developer portal and go to `Oauth2`.\

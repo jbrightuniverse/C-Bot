@@ -5,7 +5,7 @@ Most instructions are available when you activate the bot and call `++code`
 
 # Installation
 
-Link to the original bot: https://discord.com/api/oauth2/authorize?client_id=746953990910246962&permissions=100352&scope=bot
+Update 01/11/2021: The original bot has now been removed due to low usage. To use this bot, clone the repo.
 
 ## 1. Discord
 Create a Discord account and go to the [Developer Portal](https://discord.com/developers/applications/me).\
